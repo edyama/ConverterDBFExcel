@@ -25,13 +25,17 @@ namespace ConverterDBFExcel.Forms
 
         private void excelButton_Click(object sender, EventArgs e)
         {
+            excelButton.Enabled = true;
             excelButton.Checked = true;
+            libreButton.Enabled = false;
             libreButton.Checked = false;
         }
 
         private void libreButton_Click(object sender, EventArgs e)
         {
+            excelButton.Enabled = false;
             excelButton.Checked = false;
+            libreButton.Enabled = true;
             libreButton.Checked = true;
         }
 
@@ -49,7 +53,7 @@ namespace ConverterDBFExcel.Forms
 
                 if (carregarDialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (carregarDialog.FileName != "" && excelButton.Checked)
+                    if (carregarDialog.FileName != "" && excelButton.Enabled)
                     {
                         // Converte o arquivo em .xlsx
                         string fileDbf = carregarDialog.FileName;
@@ -85,7 +89,7 @@ namespace ConverterDBFExcel.Forms
                         // O texto que anuncia a conclusão da conversão é escrito
                         converterTextBox.Text = "Banco de dados " + carregarDialog.FileName + " é convertido em " + fileXlsx;
                     }
-                    else if (carregarDialog.FileName != "" && libreButton.Checked)
+                    else if (carregarDialog.FileName != "" && libreButton.Enabled)
                     {
                         // Converte o arquivo em .xlsx
                         string fileDbf = carregarDialog.FileName;
@@ -141,57 +145,3 @@ namespace ConverterDBFExcel.Forms
         }
     }
 }
-
-/*
-using System;
-using System.Diagnostics;
-using System.IO;
-
-class Program
-{
-    static void Main()
-    {
-        string dbfFile = "arquivo.dbf"; // Caminho para o arquivo DBF
-        string xlsxFile = "arquivo.xlsx"; // Caminho para o arquivo XLSX de saída
-
-        try
-        {
-            // Criar um novo processo para executar o LibreOffice
-            var processStartInfo = new ProcessStartInfo
-            {
-                FileName = "soffice", // Caminho para o executável do LibreOffice
-                Arguments = $"--convert-to xlsx --outdir \"{Path.GetDirectoryName(xlsxFile)}\" \"{dbfFile}\"",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            // Executar o processo
-            var process = new Process();
-            process.StartInfo = processStartInfo;
-            process.Start();
-
-            // Ler e exibir a saída do processo
-            string output = process.StandardOutput.ReadToEnd();
-            string error = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            if (process.ExitCode == 0)
-            {
-                Console.WriteLine("Conversão concluída com sucesso!");
-            }
-            else
-            {
-                Console.WriteLine("Ocorreu um erro durante a conversão:");
-                Console.WriteLine(error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Ocorreu um erro durante a conversão: " + ex.Message);
-        }
-    }
-}
-
-*/
