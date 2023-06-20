@@ -19,24 +19,6 @@ namespace ConverterDBFExcel.Forms
         public InicioForm()
         {
             InitializeComponent();
-            excelButton.Checked = true;
-            libreButton.Checked = false;
-        }
-
-        private void excelButton_Click(object sender, EventArgs e)
-        {
-            excelButton.Enabled = true;
-            excelButton.Checked = true;
-            libreButton.Enabled = false;
-            libreButton.Checked = false;
-        }
-
-        private void libreButton_Click(object sender, EventArgs e)
-        {
-            excelButton.Enabled = false;
-            excelButton.Checked = false;
-            libreButton.Enabled = true;
-            libreButton.Checked = true;
         }
 
         private void carregarButton_Click(object sender, EventArgs e)
@@ -53,80 +35,94 @@ namespace ConverterDBFExcel.Forms
 
                 if (carregarDialog.ShowDialog() == DialogResult.OK)
                 {
-                    if (carregarDialog.FileName != "" && excelButton.Enabled)
+                    if (carregarDialog.FileName != "" && excelButton.Checked)
                     {
-                        // Converte o arquivo em .xlsx
-                        string fileDbf = carregarDialog.FileName;
-                        string fileXlsx = "";
-
-                        if (fileDbf.Contains(".DBF"))
+                        try
                         {
-                            fileXlsx = fileDbf.Replace(".DBF", ".xlsx");
+                            // Converte o arquivo em .xlsx
+                            string fileDbf = carregarDialog.FileName;
+                            string fileXlsx = "";
+
+                            if (fileDbf.Contains(".DBF"))
+                            {
+                                fileXlsx = fileDbf.Replace(".DBF", ".xlsx");
+                            }
+                            else
+                            {
+                                fileXlsx = fileDbf.Replace(".dbf", ".xlsx");
+                            }
+
+                            // Criar uma instância do Excel
+                            var excelApp = new Microsoft.Office.Interop.Excel.Application();
+                            excelApp.Visible = false;
+                            excelApp.DisplayAlerts = false;
+
+                            // Abrir o arquivo DBF
+                            var workbook = excelApp.Workbooks.Open(fileDbf, Missing.Value, Missing.Value, Missing.Value,
+                                Missing.Value, Missing.Value, Missing.Value, Missing.Value,
+                                Missing.Value, Missing.Value, Missing.Value, Missing.Value,
+                                Missing.Value, Missing.Value, Missing.Value);
+
+                            // Salvar o arquivo em formato XLSX
+                            workbook.SaveAs(fileXlsx, XlFileFormat.xlOpenXMLWorkbook);
+
+                            // Fechar o arquivo e sair do Excel
+                            workbook.Close();
+                            excelApp.Quit();
+
+                            // O texto que anuncia a conclusão da conversão é escrito
+                            converterTextBox.Text = "Banco de dados " + carregarDialog.FileName + " é convertido em " + fileXlsx;
                         }
-                        else
+                        catch (Exception error)
                         {
-                            fileXlsx = fileDbf.Replace(".dbf", ".xlsx");
+                            Console.WriteLine("Erro: " + error.Message);
                         }
-
-                        // Criar uma instância do Excel
-                        var excelApp = new Microsoft.Office.Interop.Excel.Application();
-                        excelApp.Visible = false;
-                        excelApp.DisplayAlerts = false;
-
-                        // Abrir o arquivo DBF
-                        var workbook = excelApp.Workbooks.Open(fileDbf, Missing.Value, Missing.Value, Missing.Value,
-                            Missing.Value, Missing.Value, Missing.Value, Missing.Value,
-                            Missing.Value, Missing.Value, Missing.Value, Missing.Value,
-                            Missing.Value, Missing.Value, Missing.Value);
-
-                        // Salvar o arquivo em formato XLSX
-                        workbook.SaveAs(fileXlsx, XlFileFormat.xlOpenXMLWorkbook);
-
-                        // Fechar o arquivo e sair do Excel
-                        workbook.Close();
-                        excelApp.Quit();
-
-                        // O texto que anuncia a conclusão da conversão é escrito
-                        converterTextBox.Text = "Banco de dados " + carregarDialog.FileName + " é convertido em " + fileXlsx;
                     }
-                    else if (carregarDialog.FileName != "" && libreButton.Enabled)
+                    else if (carregarDialog.FileName != "" && libreButton.Checked)
                     {
-                        // Converte o arquivo em .xlsx
-                        string fileDbf = carregarDialog.FileName;
-                        string fileXlsx = "";
-
-                        if (fileDbf.Contains(".DBF"))
+                        try
                         {
-                            fileXlsx = fileDbf.Replace(".DBF", ".xlsx");
+                            // Converte o arquivo em .xlsx
+                            string fileDbf = carregarDialog.FileName;
+                            string fileXlsx = "";
+
+                            if (fileDbf.Contains(".DBF"))
+                            {
+                                fileXlsx = fileDbf.Replace(".DBF", ".xlsx");
+                            }
+                            else
+                            {
+                                fileXlsx = fileDbf.Replace(".dbf", ".xlsx");
+                            }
+
+                            // Criar um novo processo para executar o LibreOffice
+                            var processStartInfo = new ProcessStartInfo
+                            {
+                                FileName = "C:\\Program Files\\LibreOffice\\program\\soffice.exe", // Caminho para o executável do LibreOffice
+                                Arguments = $"--convert-to xlsx --outdir \"{Path.GetDirectoryName(fileXlsx)}\" \"{fileDbf}\"",
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+                                UseShellExecute = false,
+                                CreateNoWindow = true
+                            };
+
+                            // Executar o processo
+                            var process = new Process();
+                            process.StartInfo = processStartInfo;
+                            process.Start();
+
+                            // Ler e exibir a saída do processo
+                            string output = process.StandardOutput.ReadToEnd();
+                            string error = process.StandardError.ReadToEnd();
+                            process.WaitForExit();
+
+                            // O texto que anuncia a conclusão da conversão é escrito
+                            converterTextBox.Text = "Banco de dados " + carregarDialog.FileName + " é convertido em " + fileXlsx;
                         }
-                        else
+                        catch (Exception error)
                         {
-                            fileXlsx = fileDbf.Replace(".dbf", ".xlsx");
+                            Console.WriteLine("Erro: " + error.Message);
                         }
-
-                        // Criar um novo processo para executar o LibreOffice
-                        var processStartInfo = new ProcessStartInfo
-                        {
-                            FileName = "soffice", // Caminho para o executável do LibreOffice
-                            Arguments = $"--convert-to xlsx --outdir \"{Path.GetDirectoryName(fileXlsx)}\" \"{fileDbf}\"",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-
-                        // Executar o processo
-                        var process = new Process();
-                        process.StartInfo = processStartInfo;
-                        process.Start();
-
-                        // Ler e exibir a saída do processo
-                        string output = process.StandardOutput.ReadToEnd();
-                        string error = process.StandardError.ReadToEnd();
-                        process.WaitForExit();
-
-                        // O texto que anuncia a conclusão da conversão é escrito
-                        converterTextBox.Text = "Banco de dados " + carregarDialog.FileName + " é convertido em " + fileXlsx;
                     }
                     else
                     {
@@ -142,6 +138,18 @@ namespace ConverterDBFExcel.Forms
         private void converterTextBox_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void excelButton_CheckedChanged(object sender, EventArgs e)
+        {
+            excelButton.Checked = true;
+            libreButton.Checked = false;
+        }
+
+        private void libreButton_CheckedChanged(object sender, EventArgs e)
+        {
+            excelButton.Checked = false;
+            libreButton.Checked = true;
         }
     }
 }

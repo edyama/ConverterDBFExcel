@@ -68,6 +68,7 @@
             this.excelButton.TabStop = true;
             this.excelButton.Text = "Excel";
             this.excelButton.UseVisualStyleBackColor = true;
+            this.excelButton.CheckedChanged += new System.EventHandler(this.excelButton_CheckedChanged);
             // 
             // libreButton
             // 
@@ -79,6 +80,7 @@
             this.libreButton.TabStop = true;
             this.libreButton.Text = "LibreOffice";
             this.libreButton.UseVisualStyleBackColor = true;
+            this.libreButton.CheckedChanged += new System.EventHandler(this.libreButton_CheckedChanged);
             // 
             // InicioForm
             // 
