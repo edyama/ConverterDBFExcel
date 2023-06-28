@@ -31,8 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InicioForm));
             this.converterTextBox = new System.Windows.Forms.TextBox();
             this.converterButton = new System.Windows.Forms.Button();
-            this.excelButton = new System.Windows.Forms.RadioButton();
-            this.libreButton = new System.Windows.Forms.RadioButton();
+            this.appComboBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // converterTextBox
@@ -58,35 +57,23 @@
             this.converterButton.UseVisualStyleBackColor = true;
             this.converterButton.Click += new System.EventHandler(this.carregarButton_Click);
             // 
-            // excelButton
+            // appComboBox
             // 
-            this.excelButton.AutoSize = true;
-            this.excelButton.Location = new System.Drawing.Point(300, 164);
-            this.excelButton.Name = "excelButton";
-            this.excelButton.Size = new System.Drawing.Size(61, 20);
-            this.excelButton.TabIndex = 2;
-            this.excelButton.TabStop = true;
-            this.excelButton.Text = "Excel";
-            this.excelButton.UseVisualStyleBackColor = true;
-            this.excelButton.CheckedChanged += new System.EventHandler(this.excelButton_CheckedChanged);
-            // 
-            // libreButton
-            // 
-            this.libreButton.AutoSize = true;
-            this.libreButton.Location = new System.Drawing.Point(300, 190);
-            this.libreButton.Name = "libreButton";
-            this.libreButton.Size = new System.Drawing.Size(92, 20);
-            this.libreButton.TabIndex = 3;
-            this.libreButton.TabStop = true;
-            this.libreButton.Text = "LibreOffice";
-            this.libreButton.UseVisualStyleBackColor = true;
-            this.libreButton.CheckedChanged += new System.EventHandler(this.libreButton_CheckedChanged);
+            this.appComboBox.FormattingEnabled = true;
+            this.appComboBox.Items.AddRange(new object[] {
+            "Excel",
+            "LibreOffice",
+            "LibreOffice 32-bits"});
+            this.appComboBox.Location = new System.Drawing.Point(264, 163);
+            this.appComboBox.Name = "appComboBox";
+            this.appComboBox.Size = new System.Drawing.Size(168, 24);
+            this.appComboBox.TabIndex = 2;
+            this.appComboBox.SelectedIndexChanged += new System.EventHandler(this.appComboBox_SelectedIndexChanged);
             // 
             // InicioForm
             // 
-            this.ClientSize = new System.Drawing.Size(489, 238);
-            this.Controls.Add(this.libreButton);
-            this.Controls.Add(this.excelButton);
+            this.ClientSize = new System.Drawing.Size(489, 246);
+            this.Controls.Add(this.appComboBox);
             this.Controls.Add(this.converterButton);
             this.Controls.Add(this.converterTextBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -101,7 +88,6 @@
 
         private System.Windows.Forms.TextBox converterTextBox;
         private System.Windows.Forms.Button converterButton;
-        private System.Windows.Forms.RadioButton excelButton;
-        private System.Windows.Forms.RadioButton libreButton;
+        private System.Windows.Forms.ComboBox appComboBox;
     }
 }

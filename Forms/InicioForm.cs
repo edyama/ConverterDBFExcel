@@ -33,9 +33,9 @@ namespace ConverterDBFExcel.Forms
                 carregarDialog.FilterIndex = 2;
                 carregarDialog.RestoreDirectory = true;
 
-                if (carregarDialog.ShowDialog() == DialogResult.OK)
+                if (carregarDialog.ShowDialog() == DialogResult.OK && carregarDialog.FileName != "")
                 {
-                    if (carregarDialog.FileName != "" && excelButton.Checked)
+                    if (appComboBox.SelectedIndex == 0)
                     {
                         try
                         {
@@ -75,10 +75,10 @@ namespace ConverterDBFExcel.Forms
                         }
                         catch (Exception error)
                         {
-                            Console.WriteLine("Erro: " + error.Message);
+                            converterTextBox.Text = "Erro: " + error.Message;
                         }
                     }
-                    else if (carregarDialog.FileName != "" && libreButton.Checked)
+                    else if (appComboBox.SelectedIndex == 1)
                     {
                         try
                         {
@@ -121,7 +121,53 @@ namespace ConverterDBFExcel.Forms
                         }
                         catch (Exception error)
                         {
-                            Console.WriteLine("Erro: " + error.Message);
+                            converterTextBox.Text = "Erro: " + error.Message;
+                        }
+                    }
+                    else if (appComboBox.SelectedIndex == 2)
+                    {
+                        try
+                        {
+                            // Converte o arquivo em .xlsx
+                            string fileDbf = carregarDialog.FileName;
+                            string fileXlsx = "";
+
+                            if (fileDbf.Contains(".DBF"))
+                            {
+                                fileXlsx = fileDbf.Replace(".DBF", ".xlsx");
+                            }
+                            else
+                            {
+                                fileXlsx = fileDbf.Replace(".dbf", ".xlsx");
+                            }
+
+                            // Criar um novo processo para executar o LibreOffice
+                            var processStartInfo = new ProcessStartInfo
+                            {
+                                FileName = "C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe", // Caminho para o executável do LibreOffice
+                                Arguments = $"--convert-to xlsx --outdir \"{Path.GetDirectoryName(fileXlsx)}\" \"{fileDbf}\"",
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+                                UseShellExecute = false,
+                                CreateNoWindow = true
+                            };
+
+                            // Executar o processo
+                            var process = new Process();
+                            process.StartInfo = processStartInfo;
+                            process.Start();
+
+                            // Ler e exibir a saída do processo
+                            string output = process.StandardOutput.ReadToEnd();
+                            string error = process.StandardError.ReadToEnd();
+                            process.WaitForExit();
+
+                            // O texto que anuncia a conclusão da conversão é escrito
+                            converterTextBox.Text = "Banco de dados " + carregarDialog.FileName + " é convertido em " + fileXlsx;
+                        }
+                        catch (Exception error)
+                        {
+                            converterTextBox.Text = "Erro: " + error.Message;
                         }
                     }
                     else
@@ -132,24 +178,18 @@ namespace ConverterDBFExcel.Forms
             }
             catch (Exception error)
             {
-                Console.WriteLine("Erro: " + error.Message);            
+                Console.WriteLine("Erro: " + error.Message);
             }
         }
+
         private void converterTextBox_TextChanged(object sender, EventArgs e)
         {
 
         }
 
-        private void excelButton_CheckedChanged(object sender, EventArgs e)
+        private void appComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            excelButton.Checked = true;
-            libreButton.Checked = false;
-        }
-
-        private void libreButton_CheckedChanged(object sender, EventArgs e)
-        {
-            excelButton.Checked = false;
-            libreButton.Checked = true;
+            
         }
     }
 }
